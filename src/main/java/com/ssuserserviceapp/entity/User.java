@@ -4,8 +4,6 @@ package com.ssuserserviceapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
@@ -29,9 +27,6 @@ public class User {
 
     @Column( name = "EMAIL")
     private String email;
-
-    @Column( name = "TASK_LIST")
-    private List<Task> assossiatedTasks;
 
 
 

@@ -1,6 +1,5 @@
 package com.ssuserserviceapp.request;
 
-import com.ssuserserviceapp.entity.Task;
 import lombok.*;
 
 import java.util.List;
@@ -20,5 +19,4 @@ public class UserRequest {
 
     private String email;
 
-    private List<Task> taskList;
 }

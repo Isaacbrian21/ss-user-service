@@ -1,5 +1,6 @@
 package com.ssuserserviceapp.service;
 
+import com.ssuserserviceapp.dto.UserDto;
 import com.ssuserserviceapp.entity.User;
 import com.ssuserserviceapp.request.UserRequest;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public interface UserService {
 
     public Optional<User> userById(Long id);
 
-    public List<User> getAllUsers();
+    public List<UserDto> getAllUsers();
 
     public User createUSer(UserRequest request);
 

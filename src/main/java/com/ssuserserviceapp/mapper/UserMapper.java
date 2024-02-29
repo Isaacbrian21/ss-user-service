@@ -20,7 +20,7 @@ public class UserMapper {
                 .userName(request.getUserName())
                 .password(request.getPassword())
                 .email(request.getEmail())
-                .assossiatedTasks(request.getTaskList())
+//                .assossiatedTasks(request.getTaskList())
                 .build();
     }
 

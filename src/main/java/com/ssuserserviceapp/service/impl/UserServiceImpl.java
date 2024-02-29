@@ -1,5 +1,6 @@
 package com.ssuserserviceapp.service.impl;
 
+import com.ssuserserviceapp.dto.UserDto;
 import com.ssuserserviceapp.entity.User;
 import com.ssuserserviceapp.mapper.UserMapper;
 import com.ssuserserviceapp.repository.UserRepository;
@@ -10,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -28,11 +31,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         List<User> userList = userRepository.findAll();
-        userList.stream().map(user -> encoder.encode(user.getPassword()));
-        return userList;
+//       return userList.stream()
+//               .map(user -> new UserDto(user.getId(), user.getName(), user.getUserName(), user.getEmail(),
+//                       user.getAssossiatedTasks())).collect(Collectors.toList());
+        return userList.stream()
+                .map(user -> new UserDto(user.getId(), user.getName(), user.getUserName(), user.getEmail())).collect(Collectors.toList());
     }
+
 
     @Override
     public User createUSer(UserRequest request) {
