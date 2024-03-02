@@ -1,5 +1,6 @@
 package com.ssuserserviceapp.controller;
 
+import com.ssuserserviceapp.dto.PaswordUpdateDTO;
 import com.ssuserserviceapp.dto.UserDto;
 import com.ssuserserviceapp.entity.User;
 import com.ssuserserviceapp.request.UserRequest;
@@ -33,5 +34,23 @@ public class UserController {
     private ResponseEntity<User> createUser(@RequestBody UserRequest request) {
         userService.createUSer(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("update/{id}")
+    private ResponseEntity<User> updateUser(@RequestBody UserRequest request, @PathVariable Long id) {
+            userService.updateUserProperties(id, request);
+            return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("delete/{id}")
+    private void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
+
+    @PutMapping("passwordUpdating/{id}")
+    private ResponseEntity<User>  updateUserPassword(@RequestBody PaswordUpdateDTO updateDTO, @PathVariable Long id) {
+
+        userService.updateUserPassword(updateDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

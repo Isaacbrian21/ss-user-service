@@ -1,5 +1,6 @@
 package com.ssuserserviceapp.service;
 
+import com.ssuserserviceapp.dto.PaswordUpdateDTO;
 import com.ssuserserviceapp.dto.UserDto;
 import com.ssuserserviceapp.entity.User;
 import com.ssuserserviceapp.request.UserRequest;
@@ -26,5 +27,5 @@ public interface UserService {
     public void deleteUser(Long id);
 
 
-    void updateUserPassword(String username, String currentPassword, String newPassword, Long id);
+    public User updateUserPassword(PaswordUpdateDTO updateDTO, Long id);
 }

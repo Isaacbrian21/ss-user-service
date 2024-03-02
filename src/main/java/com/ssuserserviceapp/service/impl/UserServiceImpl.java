@@ -1,5 +1,7 @@
 package com.ssuserserviceapp.service.impl;
 
+
+import com.ssuserserviceapp.dto.PaswordUpdateDTO;
 import com.ssuserserviceapp.dto.UserDto;
 import com.ssuserserviceapp.entity.User;
 import com.ssuserserviceapp.mapper.UserMapper;
@@ -7,6 +9,7 @@ import com.ssuserserviceapp.repository.UserRepository;
 import com.ssuserserviceapp.request.UserRequest;
 import com.ssuserserviceapp.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
+@Log4j2
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -24,11 +28,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> userById(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
 
-        Optional<User> user = userRepository.findById(id);
-        encoder.encode(user.get().getPassword());
-        return user;
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String encryptedPassword = encoder.encode(user.getPassword());
+            user.setPassword(encryptedPassword);
+        }
+
+        return userOptional;
     }
+
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -44,21 +54,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUSer(UserRequest request) {
         User user = UserMapper.user(request);
+        String newPassword = request.getPassword();
+        String hashedPassword = encoder.encode(newPassword);
+        user.setPassword(hashedPassword);
+       User userTosave = userRepository.save(user);
 
-        return userRepository.save(user);
+        return userTosave;
     }
 
     @Override
     public User updateUserProperties(Long id, UserRequest request) {
 
         Optional<User> user = userRepository.findById(id);
-        User userToBeSaved = null;
         if (user.isPresent()){
             user.get().setUserName(request.getUserName());
             user.get().setName(request.getName());
             user.get().setEmail(request.getEmail());
         }
-        return null;
+        return userRepository.save(user.get());
     }
 
     @Override
@@ -68,20 +81,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserPassword(String username, String currentPassword, String newPassword, Long id) {
+    public User updateUserPassword(PaswordUpdateDTO updateDTO, Long id) {
     Optional<User> user = userRepository.findById(id);
 
-    if (user == null) {
-        throw new IllegalArgumentException("User not Found");
+    if (!user.isPresent()) {
+        throw new IllegalArgumentException("User not Found!");
     }
 
-    if (!encoder.matches(currentPassword, user.get().getPassword())) {
-        throw new IllegalArgumentException("Incorrect current user password");
+    if (!encoder.matches(updateDTO.getCurrentPassword(), user.get().getPassword())) {
+        log.info("Senha antiga lançada pelo usuário para ser verificado: " + updateDTO.getCurrentPassword());
+        log.info("Senha atual do usuário: " + user.get().getPassword());
+
+        throw new IllegalArgumentException("Incorrect current user password!");
     }
 
-    String hashedPassword = encoder.encode(newPassword);
 
-    user.get().setPassword(hashedPassword);
-    userRepository.save(user.get());
+    String hashedNewPassword = encoder.encode(updateDTO.getNewPassword());
+
+    if (encoder.matches(updateDTO.getNewPassword(), user.get().getPassword())) {
+        throw new IllegalArgumentException("New password cannot be equals old password");
+    }
+
+    log.info("Pasword updated successfully");
+
+    User userToSsave = userRepository.save(user.get());
+
+    return userToSsave;
     }
 }
